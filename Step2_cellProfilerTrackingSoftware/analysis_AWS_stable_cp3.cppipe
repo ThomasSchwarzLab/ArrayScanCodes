@@ -1,0 +1,554 @@
+CellProfiler Pipeline: http://www.cellprofiler.org
+Version:3
+DateRevision:300
+GitHash:
+ModuleCount:30
+HasImagePlaneDetails:False
+
+Images:[module_num:1|svn_version:\'Unknown\'|variable_revision_number:2|show_window:False|notes:\x5B\'To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    :
+    Filter images?:Images only
+    Select the rule criteria:and (extension does isimage) (directory doesnot containregexp "\x5B\\\\\\\\\\\\\\\\/\x5D\\\\\\\\.")
+
+Metadata:[module_num:2|svn_version:\'Unknown\'|variable_revision_number:4|show_window:False|notes:\x5B\'The Metadata module optionally allows you to extract information describing your images (i.e, metadata) which will be stored along with your measurements. This information can be contained in the file name and/or location, or in an external file.\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Extract metadata?:Yes
+    Metadata data type:Text
+    Metadata types:{}
+    Extraction method count:2
+    Metadata extraction method:Extract from file/folder names
+    Metadata source:File name
+    Regular expression to extract from file name:.*t(?P<Time>\x5B0-9\x5D{3})(?P<Well>\x5BA-Za-z\x5D\x5B0-9\x5D{2})f(?P<Site>\x5B0-9\x5D*)
+    Regular expression to extract from folder name:(?P<Date>\x5B0-9\x5D{4}_\x5B0-9\x5D{2}_\x5B0-9\x5D{2})$
+    Extract metadata from:All images
+    Select the filtering criteria:and (file does contain "")
+    Metadata file location:
+    Match file and image metadata:\x5B\x5D
+    Use case insensitive matching?:No
+    Metadata extraction method:Extract from file/folder names
+    Metadata source:Folder name
+    Regular expression to extract from file name:^(?P<Plate>.*)_(?P<Well>\x5BA-P\x5D\x5B0-9\x5D{2})_s(?P<Site>\x5B0-9\x5D)_w(?P<ChannelNumber>\x5B0-9\x5D)
+    Regular expression to extract from folder name:(?P<Plate>\x5B0-9\x5D{12})
+    Extract metadata from:All images
+    Select the filtering criteria:and (file does contain "")
+    Metadata file location:
+    Match file and image metadata:\x5B\x5D
+    Use case insensitive matching?:No
+
+NamesAndTypes:[module_num:3|svn_version:\'Unknown\'|variable_revision_number:8|show_window:False|notes:\x5B\'The NamesAndTypes module allows you to assign a meaningful name to each image by which other modules will refer to it.\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Assign a name to:Images matching rules
+    Select the image type:Grayscale image
+    Name to assign these images:DNA
+    Match metadata:\x5B{u\'Mito\'\x3A u\'Plate\', u\'ProjectionMito\'\x3A u\'Plate\'}, {u\'Mito\'\x3A u\'Well\', u\'ProjectionMito\'\x3A u\'Well\'}, {u\'Mito\'\x3A u\'Time\', u\'ProjectionMito\'\x3A None}\x5D
+    Image set matching method:Metadata
+    Set intensity range from:Image metadata
+    Assignments count:2
+    Single images count:0
+    Maximum intensity:255.0
+    Process as 3D?:No
+    Relative pixel spacing in X:1.0
+    Relative pixel spacing in Y:1.0
+    Relative pixel spacing in Z:1.0
+    Select the rule criteria:and (directory doesnot contain "projection")
+    Name to assign these images:Mito
+    Name to assign these objects:Cell
+    Select the image type:Grayscale image
+    Set intensity range from:Image metadata
+    Maximum intensity:255.0
+    Select the rule criteria:and (directory does contain "projection")
+    Name to assign these images:ProjectionMito
+    Name to assign these objects:Cell
+    Select the image type:Grayscale image
+    Set intensity range from:Image metadata
+    Maximum intensity:255.0
+
+Groups:[module_num:4|svn_version:\'Unknown\'|variable_revision_number:2|show_window:False|notes:\x5B\'The Groups module optionally allows you to split your list of images into image subsets (groups) which will be processed independently of each other. Examples of groupings include screening batches, microtiter plates, time-lapse movies, etc.\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Do you want to group your images?:Yes
+    grouping metadata count:2
+    Metadata category:Plate
+    Metadata category:Well
+
+CorrectIlluminationCalculate:[module_num:5|svn_version:\'Unknown\'|variable_revision_number:2|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:ProjectionMito
+    Name the output image:IllumProjection
+    Select how the illumination function is calculated:Background
+    Dilate objects in the final averaged image?:No
+    Dilation radius:1
+    Block size:100
+    Rescale the illumination function?:No
+    Calculate function for each image individually, or based on all images?:Each
+    Smoothing method:Gaussian Filter
+    Method to calculate smoothing filter size:Manually
+    Approximate object diameter:10
+    Smoothing filter size:300
+    Retain the averaged image?:No
+    Name the averaged image:IllumBlueAvg
+    Retain the dilated image?:No
+    Name the dilated image:IllumBlueDilated
+    Automatically calculate spline parameters?:Yes
+    Background mode:auto
+    Number of spline points:5
+    Background threshold:2.0
+    Image resampling factor:2.0
+    Maximum number of iterations:40
+    Residual value for convergence:0.001
+
+CorrectIlluminationApply:[module_num:6|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:ProjectionMito
+    Name the output image:CorrectedProjMito
+    Select the illumination function:IllumProjection
+    Select how the illumination function is applied:Subtract
+
+IdentifyPrimaryObjects:[module_num:7|svn_version:\'Unknown\'|variable_revision_number:13|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:CorrectedProjMito
+    Name the primary objects to be identified:LargeStationaryObjects
+    Typical diameter of objects, in pixel units (Min,Max):10,1000
+    Discard objects outside the diameter range?:Yes
+    Discard objects touching the border of the image?:No
+    Method to distinguish clumped objects:None
+    Method to draw dividing lines between clumped objects:Intensity
+    Size of smoothing filter:10
+    Suppress local maxima that are closer than this minimum allowed distance:7.0
+    Speed up by using lower-resolution image to find local maxima?:Yes
+    Fill holes in identified objects?:After declumping only
+    Automatically calculate size of smoothing filter for declumping?:Yes
+    Automatically calculate minimum allowed distance between local maxima?:Yes
+    Handling of objects if excessive number of objects identified:Continue
+    Maximum number of objects:500
+    Use advanced settings?:Yes
+    Threshold setting version:10
+    Threshold strategy:Global
+    Thresholding method:Otsu
+    Threshold smoothing scale:1.3488
+    Threshold correction factor:1.0
+    Lower and upper bounds on threshold:0.0,1.0
+    Manual threshold:0.0
+    Select the measurement to threshold with:None
+    Two-class or three-class thresholding?:Two classes
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Size of adaptive window:50
+    Lower outlier fraction:0.05
+    Upper outlier fraction:0.05
+    Averaging method:Mean
+    Variance method:Standard deviation
+    # of deviations:2.0
+    Thresholding method:Otsu
+
+ExpandOrShrinkObjects:[module_num:8|svn_version:\'Unknown\'|variable_revision_number:2|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input objects:LargeStationaryObjects
+    Name the output objects:ExpandedLargeObjects
+    Select the operation:Expand objects by a specified number of pixels
+    Number of pixels by which to expand or shrink:10
+    Fill holes in objects so that all objects shrink to a single point?:No
+
+EnhanceOrSuppressFeatures:[module_num:9|svn_version:\'Unknown\'|variable_revision_number:6|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:Mito
+    Name the output image:CorrectedMito
+    Select the operation:Enhance
+    Feature size:10
+    Feature type:Speckles
+    Range of hole sizes:1,10
+    Smoothing scale:2.0
+    Shear angle:0.0
+    Decay:0.95
+    Enhancement method:Tubeness
+    Speed and accuracy:Slow
+
+MaskImage:[module_num:10|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:CorrectedMito
+    Name the output image:MaskedMito
+    Use objects or an image as a mask?:Objects
+    Select object for mask:ExpandedLargeObjects
+    Select image for mask:None
+    Invert the mask?:Yes
+
+MaskImage:[module_num:11|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:CorrectedProjMito
+    Name the output image:MaskedProjMito
+    Use objects or an image as a mask?:Objects
+    Select object for mask:ExpandedLargeObjects
+    Select image for mask:None
+    Invert the mask?:Yes
+
+MeasureImageQuality:[module_num:12|svn_version:\'Unknown\'|variable_revision_number:5|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Calculate metrics for which images?:Select...
+    Image count:1
+    Scale count:1
+    Threshold count:4
+    Select the images to measure:CorrectedMito,MaskedMito,MaskedProjMito,Mito,ProjectionMito
+    Include the image rescaling value?:No
+    Calculate blur metrics?:No
+    Spatial scale for blur measurements:20
+    Calculate saturation metrics?:No
+    Calculate intensity metrics?:No
+    Calculate thresholds?:Yes
+    Use all thresholding methods?:No
+    Select a thresholding method:Otsu
+    Typical fraction of the image covered by objects:0.1
+    Two-class or three-class thresholding?:Two classes
+    Minimize the weighted variance or the entropy?:Weighted variance
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Select a thresholding method:Otsu
+    Typical fraction of the image covered by objects:0.1
+    Two-class or three-class thresholding?:Three classes
+    Minimize the weighted variance or the entropy?:Weighted variance
+    Assign pixels in the middle intensity class to the foreground or the background?:Background
+    Select a thresholding method:RobustBackground
+    Typical fraction of the image covered by objects:0.1
+    Two-class or three-class thresholding?:Two classes
+    Minimize the weighted variance or the entropy?:Weighted variance
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Select a thresholding method:Background
+    Typical fraction of the image covered by objects:0.1
+    Two-class or three-class thresholding?:Two classes
+    Minimize the weighted variance or the entropy?:Weighted variance
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+
+Crop:[module_num:13|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:MaskedMito
+    Name the output image:CroppedMito
+    Select the cropping shape:Rectangle
+    Select the cropping method:Coordinates
+    Apply which cycle\'s cropping pattern?:Every
+    Left and right rectangle positions:1,end
+    Top and bottom rectangle positions:1,end
+    Coordinates of ellipse center:500,500
+    Ellipse radius, X direction:400
+    Ellipse radius, Y direction:200
+    Remove empty rows and columns?:All
+    Select the masking image:None
+    Select the image with a cropping mask:None
+    Select the objects:None
+
+Crop:[module_num:14|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:MaskedProjMito
+    Name the output image:CroppedProjMito
+    Select the cropping shape:Previous cropping
+    Select the cropping method:Coordinates
+    Apply which cycle\'s cropping pattern?:Every
+    Left and right rectangle positions:0,end
+    Top and bottom rectangle positions:0,end
+    Coordinates of ellipse center:500,500
+    Ellipse radius, X direction:400
+    Ellipse radius, Y direction:200
+    Remove empty rows and columns?:All
+    Select the masking image:None
+    Select the image with a cropping mask:CroppedMito
+    Select the objects:None
+
+IdentifyPrimaryObjects:[module_num:15|svn_version:\'Unknown\'|variable_revision_number:13|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:CroppedMito
+    Name the primary objects to be identified:AllMito
+    Typical diameter of objects, in pixel units (Min,Max):2,20
+    Discard objects outside the diameter range?:Yes
+    Discard objects touching the border of the image?:Yes
+    Method to distinguish clumped objects:Intensity
+    Method to draw dividing lines between clumped objects:Intensity
+    Size of smoothing filter:3
+    Suppress local maxima that are closer than this minimum allowed distance:3
+    Speed up by using lower-resolution image to find local maxima?:No
+    Fill holes in identified objects?:After declumping only
+    Automatically calculate size of smoothing filter for declumping?:No
+    Automatically calculate minimum allowed distance between local maxima?:No
+    Handling of objects if excessive number of objects identified:Continue
+    Maximum number of objects:500
+    Use advanced settings?:Yes
+    Threshold setting version:10
+    Threshold strategy:Global
+    Thresholding method:Measurement
+    Threshold smoothing scale:1.3488
+    Threshold correction factor:2
+    Lower and upper bounds on threshold:0.0,1.0
+    Manual threshold:0.0
+    Select the measurement to threshold with:ImageQuality_ThresholdRobustBackground_MaskedMito
+    Two-class or three-class thresholding?:Two classes
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Size of adaptive window:50
+    Lower outlier fraction:0.05
+    Upper outlier fraction:0.05
+    Averaging method:Mean
+    Variance method:Standard deviation
+    # of deviations:2.0
+    Thresholding method:Otsu
+
+IdentifyPrimaryObjects:[module_num:16|svn_version:\'Unknown\'|variable_revision_number:13|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:CorrectedProjMito
+    Name the primary objects to be identified:StationaryMito
+    Typical diameter of objects, in pixel units (Min,Max):3,15
+    Discard objects outside the diameter range?:No
+    Discard objects touching the border of the image?:Yes
+    Method to distinguish clumped objects:Intensity
+    Method to draw dividing lines between clumped objects:Intensity
+    Size of smoothing filter:1
+    Suppress local maxima that are closer than this minimum allowed distance:3
+    Speed up by using lower-resolution image to find local maxima?:No
+    Fill holes in identified objects?:After declumping only
+    Automatically calculate size of smoothing filter for declumping?:No
+    Automatically calculate minimum allowed distance between local maxima?:No
+    Handling of objects if excessive number of objects identified:Continue
+    Maximum number of objects:500
+    Use advanced settings?:Yes
+    Threshold setting version:10
+    Threshold strategy:Global
+    Thresholding method:Measurement
+    Threshold smoothing scale:1.3488
+    Threshold correction factor:4
+    Lower and upper bounds on threshold:0.0,1.0
+    Manual threshold:0.0
+    Select the measurement to threshold with:ImageQuality_ThresholdOtsu_MaskedProjMito_2W
+    Two-class or three-class thresholding?:Two classes
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Size of adaptive window:50
+    Lower outlier fraction:0.05
+    Upper outlier fraction:0.05
+    Averaging method:Mean
+    Variance method:Standard deviation
+    # of deviations:2.0
+    Thresholding method:Otsu
+
+OverlayOutlines:[module_num:17|svn_version:\'Unknown\'|variable_revision_number:4|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Display outlines on a blank image?:Yes
+    Select image on which to display outlines:None
+    Name the output image:StationaryMitoOutlines
+    Outline display mode:Grayscale
+    Select method to determine brightness of outlines:Max of image
+    How to outline:Inner
+    Select outline color:white
+    Select objects to display:StationaryMito
+
+ExpandOrShrinkObjects:[module_num:18|svn_version:\'Unknown\'|variable_revision_number:2|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input objects:StationaryMito
+    Name the output objects:ExpandedStationaryMito
+    Select the operation:Expand objects by a specified number of pixels
+    Number of pixels by which to expand or shrink:1
+    Fill holes in objects so that all objects shrink to a single point?:No
+
+MaskObjects:[module_num:19|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select objects to be masked:AllMito
+    Name the masked objects:MotileMito
+    Mask using a region defined by other objects or by binary image?:Objects
+    Select the masking object:ExpandedStationaryMito
+    Select the masking image:None
+    Handling of objects that are partially masked:Remove depending on overlap
+    Fraction of object that must overlap:0.75
+    Numbering of resulting objects:Renumber
+    Invert the mask?:Yes
+
+OverlayOutlines:[module_num:20|svn_version:\'Unknown\'|variable_revision_number:4|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Display outlines on a blank image?:Yes
+    Select image on which to display outlines:None
+    Name the output image:MotileMitoOutlines
+    Outline display mode:Grayscale
+    Select method to determine brightness of outlines:Max of image
+    How to outline:Inner
+    Select outline color:white
+    Select objects to display:MotileMito
+
+TrackObjects:[module_num:21|svn_version:\'Unknown\'|variable_revision_number:7|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Choose a tracking method:LAP
+    Select the objects to track:MotileMito
+    Select object measurement to use for tracking:None
+    Maximum pixel distance to consider matches:50
+    Select display option:Color Only
+    Save color-coded image?:Yes
+    Name the output image:Tracked
+    Select the movement model:Both
+    Number of standard deviations for search radius:10
+    Search radius limit, in pixel units (Min,Max):2.0,10.0
+    Run the second phase of the LAP algorithm?:Yes
+    Gap closing cost:80
+    Split alternative cost:1
+    Merge alternative cost:1
+    Maximum gap displacement, in pixel units:10
+    Maximum split score:50
+    Maximum merge score:10
+    Maximum temporal gap, in frames:10
+    Filter objects by lifetime?:No
+    Filter using a minimum lifetime?:Yes
+    Minimum lifetime:1
+    Filter using a maximum lifetime?:No
+    Maximum lifetime:100
+    Mitosis alternative cost:80
+    Maximum mitosis distance, in pixel units:40
+    Average cell diameter in pixels:35.0
+    Use advanced configuration parameters:No
+    Cost of cell to empty matching:15.0
+    Weight of area difference in function matching cost:25.0
+
+TrackObjects:[module_num:22|svn_version:\'Unknown\'|variable_revision_number:7|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Choose a tracking method:LAP
+    Select the objects to track:StationaryMito
+    Select object measurement to use for tracking:None
+    Maximum pixel distance to consider matches:50
+    Select display option:Color Only
+    Save color-coded image?:No
+    Name the output image:TrackedCells
+    Select the movement model:Both
+    Number of standard deviations for search radius:10
+    Search radius limit, in pixel units (Min,Max):1,10.0
+    Run the second phase of the LAP algorithm?:No
+    Gap closing cost:40
+    Split alternative cost:40
+    Merge alternative cost:40
+    Maximum gap displacement, in pixel units:5
+    Maximum split score:50
+    Maximum merge score:50
+    Maximum temporal gap, in frames:5
+    Filter objects by lifetime?:No
+    Filter using a minimum lifetime?:Yes
+    Minimum lifetime:1
+    Filter using a maximum lifetime?:No
+    Maximum lifetime:100
+    Mitosis alternative cost:80
+    Maximum mitosis distance, in pixel units:40
+    Average cell diameter in pixels:35.0
+    Use advanced configuration parameters:No
+    Cost of cell to empty matching:15.0
+    Weight of area difference in function matching cost:25.0
+
+RescaleIntensity:[module_num:23|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:CroppedMito
+    Name the output image:CroppedMito_RescaleIntensity
+    Rescaling method:Stretch each image to use the full intensity range
+    Method to calculate the minimum intensity:Custom
+    Method to calculate the maximum intensity:Custom
+    Lower intensity limit for the input image:0.0
+    Upper intensity limit for the input image:1.0
+    Intensity range for the input image:0.0,1.0
+    Intensity range for the output image:0.0,1.0
+    Select image to match in maximum intensity:None
+    Divisor value:1.0
+    Divisor measurement:None
+
+OverlayOutlines:[module_num:24|svn_version:\'Unknown\'|variable_revision_number:4|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Display outlines on a blank image?:No
+    Select image on which to display outlines:CroppedMito_RescaleIntensity
+    Name the output image:OrigOverlay
+    Outline display mode:Color
+    Select method to determine brightness of outlines:Max of image
+    How to outline:Inner
+    Select outline color:green
+    Select objects to display:MotileMito
+    Select outline color:blue
+    Select objects to display:LargeStationaryObjects
+    Select outline color:red
+    Select objects to display:StationaryMito
+
+SaveImages:[module_num:25|svn_version:\'Unknown\'|variable_revision_number:13|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the type of image to save:Image
+    Select the image to save:CroppedMito_RescaleIntensity
+    Select method for constructing file names:From image filename
+    Select image name for file prefix:Mito
+    Enter single file name:OrigBlue
+    Number of digits:4
+    Append a suffix to the image file name?:No
+    Text to append to the image name:
+    Saved file format:png
+    Output file location:Default Output Folder sub-folder\x7Ccropped/\\\\g<Plate>/\\\\g<Well>
+    Image bit depth:8-bit integer
+    Overwrite existing files without warning?:Yes
+    When to save:Every cycle
+    Record the file and path information to the saved image?:Yes
+    Create subfolders in the output folder?:No
+    Base image folder:Elsewhere...\x7C
+
+Tile:[module_num:26|svn_version:\'Unknown\'|variable_revision_number:1|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select an input image:CroppedMito
+    Name the output image:TiledImage
+    Tile assembly method:Within cycles
+    Final number of rows:1
+    Final number of columns:12
+    Image corner to begin tiling:top left
+    Direction to begin tiling:row
+    Use meander mode?:No
+    Automatically calculate number of rows?:No
+    Automatically calculate number of columns?:Yes
+    Select an additional image to tile:Tracked
+
+SaveImages:[module_num:27|svn_version:\'Unknown\'|variable_revision_number:13|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the type of image to save:Image
+    Select the image to save:StationaryMitoOutlines
+    Select method for constructing file names:From image filename
+    Select image name for file prefix:Mito
+    Enter single file name:OrigBlue
+    Number of digits:4
+    Append a suffix to the image file name?:No
+    Text to append to the image name:
+    Saved file format:png
+    Output file location:Default Output Folder sub-folder\x7Coutlines/\\\\g<Plate>/\\\\g<Well>
+    Image bit depth:8-bit integer
+    Overwrite existing files without warning?:Yes
+    When to save:Every cycle
+    Record the file and path information to the saved image?:No
+    Create subfolders in the output folder?:No
+    Base image folder:Elsewhere...\x7C
+
+SaveImages:[module_num:28|svn_version:\'Unknown\'|variable_revision_number:13|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the type of image to save:Image
+    Select the image to save:MotileMitoOutlines
+    Select method for constructing file names:From image filename
+    Select image name for file prefix:Mito
+    Enter single file name:OrigBlue
+    Number of digits:4
+    Append a suffix to the image file name?:Yes
+    Text to append to the image name:
+    Saved file format:png
+    Output file location:Default Output Folder sub-folder\x7Coutlines/\\\\g<Plate>/\\\\g<Well>
+    Image bit depth:8-bit integer
+    Overwrite existing files without warning?:Yes
+    When to save:Every cycle
+    Record the file and path information to the saved image?:Yes
+    Create subfolders in the output folder?:No
+    Base image folder:Elsewhere...\x7C
+
+SaveImages:[module_num:29|svn_version:\'Unknown\'|variable_revision_number:13|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the type of image to save:Image
+    Select the image to save:OrigOverlay
+    Select method for constructing file names:From image filename
+    Select image name for file prefix:Mito
+    Enter single file name:OrigBlue
+    Number of digits:4
+    Append a suffix to the image file name?:No
+    Text to append to the image name:
+    Saved file format:png
+    Output file location:Default Output Folder sub-folder\x7Coverlay/\\\\g<Plate>/\\\\g<Well>
+    Image bit depth:8-bit integer
+    Overwrite existing files without warning?:Yes
+    When to save:Every cycle
+    Record the file and path information to the saved image?:Yes
+    Create subfolders in the output folder?:No
+    Base image folder:Elsewhere...\x7C
+
+ExportToSpreadsheet:[module_num:30|svn_version:\'Unknown\'|variable_revision_number:12|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+    Select the column delimiter:Comma (",")
+    Add image metadata columns to your object data file?:Yes
+    Select the measurements to export:No
+    Calculate the per-image mean values for object measurements?:No
+    Calculate the per-image median values for object measurements?:No
+    Calculate the per-image standard deviation values for object measurements?:No
+    Output file location:Default Output Folder\x7C
+    Create a GenePattern GCT file?:No
+    Select source of sample row name:Metadata
+    Select the image to use as the identifier:None
+    Select the metadata to use as the identifier:None
+    Export all measurement types?:No
+    Press button to select measurements:
+    Representation of Nan/Inf:Null
+    Add a prefix to file names?:No
+    Filename prefix:Basal_Selected_
+    Overwrite existing files without warning?:Yes
+    Data to export:Image
+    Combine these object measurements with those of the previous object?:No
+    File name:\\\\g<Plate>_\\\\g<Well>_f\\\\g<Site>_Image.csv
+    Use the object name for the file name?:No
+    Data to export:MotileMito
+    Combine these object measurements with those of the previous object?:No
+    File name:\\\\g<Plate>_\\\\g<Well>_f\\\\g<Site>_MotileMoto.csv
+    Use the object name for the file name?:No
+    Data to export:StationaryMito
+    Combine these object measurements with those of the previous object?:No
+    File name:\\\\g<Plate>_\\\\g<Well>_f\\\\g<Site>_StationaryMito.csv
+    Use the object name for the file name?:No
+    Data to export:Object relationships
+    Combine these object measurements with those of the previous object?:No
+    File name:\\\\g<Plate>_\\\\g<Well>_f\\\\g<Site>_Object_relationships.csv
+    Use the object name for the file name?:No
